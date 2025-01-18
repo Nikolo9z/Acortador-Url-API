@@ -11,10 +11,11 @@
 using System;
 using System.Reflection;
 
+[assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("96efc89d-6ad3-4bb2-8358-fcec501956f1")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("AcortadorURL")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+aaa52252ebe392bf89694044ad04add1f89b5b01")]
 [assembly: System.Reflection.AssemblyProductAttribute("AcortadorURL")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AcortadorURL")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

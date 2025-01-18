@@ -48,7 +48,7 @@ namespace AcortadorURL.Controllers
                 {
                     error = "InternalServerError",
                     statusCode = 500,
-                    description = "An error occurred while processing your request."
+                    description = ex.Message
                 });
             }
         }
@@ -73,11 +73,11 @@ namespace AcortadorURL.Controllers
 
                 if (response.OriginalURL == null)
                 {
-                    return Ok(new OriginalUrlResponse
+                    return NotFound(new OriginalUrlResponse
                     {
                         error = "NotFound",
                         statusCode = 404,
-                        description = "No se encontro el la URL."
+                        description = "No se encontró la URL asociada al código proporcionado."
                     });
                 }
 
@@ -90,6 +90,18 @@ namespace AcortadorURL.Controllers
             }
             catch (Exception ex)
             {
+                // Verificar si la excepción está relacionada con la URL no encontrada
+                if (ex.Message.Contains("URL corta no encontrada"))
+                {
+                    return NotFound(new OriginalUrlResponse
+                    {
+                        error = "NotFound",
+                        statusCode = 404,
+                        description = "No se encontró la URL asociada al código proporcionado."
+                    });
+                }
+
+                // Excepciones generales
                 return StatusCode(500, new OriginalUrlResponse
                 {
                     error = "InternalServerError",
@@ -98,5 +110,6 @@ namespace AcortadorURL.Controllers
                 });
             }
         }
+
     }
 }

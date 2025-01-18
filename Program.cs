@@ -11,18 +11,29 @@ builder.Services.AddScoped<OriginalURL>();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<InsertURL>();
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("PoliticaCors",
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+app.UseSwagger();
+
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
 
+app.UseHttpsRedirection();
+app.UseCors("PoliticaCors");
 app.UseAuthorization();
 
 app.MapControllers();

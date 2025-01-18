@@ -1,5 +1,5 @@
 ﻿using AcortadorURL.Modelo.InsertURL;
-using Microsoft.Data.SqlClient;
+using Npgsql;
 using Microsoft.Extensions.Configuration;
 using System.Data;
 
@@ -8,6 +8,8 @@ namespace AcortadorURL.Data
     public class InsertURL
     {
         private readonly string _connectionString;
+
+        // Constructor que obtiene la cadena de conexión desde la configuración
         public InsertURL(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("MyDatabaseConnectionString");
@@ -16,26 +18,32 @@ namespace AcortadorURL.Data
         public ResponseInsertURL InsertarURL(RequestInsertURL url)
         {
             ResponseInsertURL response = new ResponseInsertURL();
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+
+            // Abrir conexión con PostgreSQL
+            using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString))
             {
                 connection.Open();
-                SqlCommand command = new SqlCommand("InsertURL", connection);
-                command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.Add(new SqlParameter("@OriginalUrl", url.URL));
-                using (SqlDataReader reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        response= new ResponseInsertURL
-                        {
-                            ShortURL = reader["ShortUrl"].ToString()
-                        };
-                        
-                    }
 
+                // Llamar a la función almacenada
+                using (NpgsqlCommand command = new NpgsqlCommand("SELECT insert_url(@OriginalUrl)", connection))
+                {
+                    // Agregar el parámetro de entrada
+                    command.Parameters.AddWithValue("@OriginalUrl", url.URL);
+
+                    // Ejecutar y leer el resultado
+                    var result = command.ExecuteScalar();
+
+                    if (result != null)
+                    {
+                        response.ShortURL = result.ToString();
+                    }
+                    else
+                    {
+                        throw new Exception("No se pudo generar la URL corta.");
+                    }
                 }
-                
             }
+
             return response;
         }
     }
